@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ug" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ئامبار ماللىرىنى تېز تىزىملاش سىستېمىسى</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-light: #e0f2fe;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, -apple-system, 'Microsoft Uighur', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* سىپتا باش قىسمى */
+    header {
+      background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+      color: #fff;
+      padding: 24px 20px;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.2);
+      margin-bottom: 20px;
+    }
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .header-title p {
+      font-size: 0.9rem;
+      opacity: 0.92;
+    }
+    .db-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+    }
+
+    /* ستاتىستىكا كارتىلىرى */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 18px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-card .label {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .stat-card .value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .stat-card.amount .value {
+      color: var(--success);
+    }
+
+    /* كىرگۈزۈش بۆلىكى */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    .form-group input, .form-group select {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+      background: #fff;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .auto-total-box {
+      background: #f8fafc !important;
+      color: var(--success) !important;
+      font-weight: 800 !important;
+      font-size: 1.1rem !important;
+      border-color: #cbd5e1 !important;
+      cursor: default;
+    }
+
+    .btn-main {
+      margin-top: 18px;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-main:hover {
+      background: var(--primary-hover);
+    }
+    .btn-main:active {
+      transform: scale(0.99);
+    }
+
+    /* ئىزدەش ۋە سۈزۈش تاختىسى */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* كۇنۇپكىلار توپى */
+    .actions-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-tool {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-tool:hover {
+      background: #f8fafc;
+    }
+    .btn-excel {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: #bbf7d0;
+    }
+    .btn-excel:hover {
+      background: #bbf7d0;
+    }
+
+    /* سىپتا جەدۋەل */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+    }
+    th, td {
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .badge-new { background: var(--success-bg); color: var(--success); }
+    .badge-used { background: var(--warning-bg); color: var(--warning); }
+    .badge-damaged { background: var(--danger-bg); color: var(--danger); }
+
+    .tbl-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .btn-edit { color: var(--primary); margin-left: 6px; }
+    .btn-edit:hover { background: var(--primary-light); }
+    .btn-del { color: var(--danger); }
+    .btn-del:hover { background: var(--danger-bg); }
+
+    /* تەھرىرلەش كۆزنىكى (Modal) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* لەيلىمە ئۇقتۇرۇش (Toast) */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, bottom 0.3s ease;
+      z-index: 2000;
+    }
+    .toast-show {
+      opacity: 1;
+      bottom: 30px;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      header .db-status, .card:first-of-type, .actions-row, .filter-bar, .tbl-action-btn, th:last-child, td:last-child {
+        display: none !important;
+      }
+      header { background: none; color: #000; box-shadow: none; border-bottom: 2px solid #000; padding: 10px 0; }
+      .card { border: none; box-shadow: none; padding: 0; }
+      .stat-card { border: 1px solid #ccc; box-shadow: none; }
+      table { border: 1px solid #000; }
+      th, td { border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- باش قىسمى -->
+    <header>
+      <div class="header-title">
+        <h1>ئامبار ماللىرىنى تېز تىزىملاش سىستېمىسى</h1>
+        <p>سانلىق مەلۇمات ئامبىرى ئارقىلىق پۈتۈنلەي يەرلىكتە مەڭگۈ ساقلىنىدۇ</p>
+      </div>
+      <div class="db-status">
+        <span class="status-dot"></span>
+        <span id="dbStatusText">ئامبار: تەييارلىنىۋاتىدۇ...</span>
+      </div>
+    </header>
+
+    <!-- ئومۇمىي ساناق كارتىلىرى -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="label">تىزىملانغان تۈر سانى</span>
+        <span class="value" id="statTypes">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="label">جەمئىي مال دانە سانى</span>
+        <span class="value" id="statQty">0</span>
+      </div>
+      <div class="stat-card amount">
+        <span class="label">ئامبارنىڭ ئومۇمىي قىممىتى</span>
+        <span class="value" id="statAmount">0.00 $</span>
+      </div>
+    </div>
+
+    <!-- كىرگۈزۈش بۆلىكى -->
+    <div class="card">
+      <div class="card-title">
+        <span>+ يېڭى مال كىرگۈزۈش</span>
+      </div>
+      <form id="addForm">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label for="name">مەھسۇلات نامى:</label>
+            <input type="text" id="name" placeholder="مەسىلەن: پىرىنتېر" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label for="qty">سانى:</label>
+            <input type="number" id="qty" min="1" placeholder="مەسىلەن: 50" required>
+          </div>
+
+          <div class="form-group">
+            <label for="price">بىر دانىسىنىڭ باھاسى ($):</label>
+            <input type="number" step="0.01" id="price" min="0" placeholder="مەسىلەن: 120" required>
+          </div>
+
+          <div class="form-group">
+            <label for="totalAuto">جەمئىي سومما (ئاپتوماتىك):</label>
+            <input type="text" id="totalAuto" class="auto-total-box" value="0.00 $" readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="quality">سۈپەت ئەھۋالى:</label>
+            <select id="quality">
+              <option value="يېڭى">يېڭى (ئېچىلمىغان)</option>
+              <option value="ياخشى">ياخشى (ئىشلىتىلگەن)</option>
+              <option value="نۇقسانلىق">نۇقسانلىق / بۇزۇلغان</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="location">ئورنى / تەكچە:</label>
+            <input type="text" id="location" placeholder="مەسىلەن: A-1 تەكچە">
+          </div>
+
+          <!-- يېڭى قوشۇلغان ئىزاھات بۆلىكى -->
+          <div class="form-group">
+            <label for="notes">ئىزاھات (ئەسكەرتىش):</label>
+            <input type="text" id="notes" placeholder="مەسىلەن: ساندۇقى يوق، كاپالەتلىك...">
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn-main">ئامبار ئامبىرىغا ساقلاش</button>
+      </form>
+    </div>
+
+    <!-- تىزىملىك ۋە قوراللار -->
+    <div class="card">
+      <div class="card-title">
+        <span>ئامباردىكى ماللار تىزىمى</span>
+        <div class="actions-row">
+          <button class="btn-tool btn-excel" onclick="exportExcel()">Excel (CSV) چۈشۈرۈش</button>
+          <button class="btn-tool" onclick="window.print()">بېسىش / PDF</button>
+          <button class="btn-tool" style="color:var(--danger);" onclick="clearAllData()">ئامبارنى پاكىز تازىلاش</button>
+        </div>
+      </div>
+
+      <!-- ئىزدەش ۋە سۈزۈش -->
+      <div class="filter-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="نامى، ئورنى ياكى ئىزاھات بويىچە ئىزدەش...">
+        <select id="filterQuality" class="search-input" style="flex:0 0 160px;">
+          <option value="">بارلىق سۈپەتلەر</option>
+          <option value="يېڭى">يېڭى</option>
+          <option value="ياخشى">ياخشى</option>
+          <option value="نۇقسانلىق">نۇقسانلىق</option>
+        </select>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">تەرتىپ</th>
+              <th>مەھسۇلات نامى</th>
+              <th>سۈپىتى</th>
+              <th>سانى</th>
+              <th>بىر دانىسى</th>
+              <th>جەمئىي سوممىسى</th>
+              <th>ئورنى</th>
+              <th>ئىزاھات</th>
+              <th style="width: 110px;">مەشغۇلات</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- تەھرىرلەش كۆزنىكى (Modal) -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-card">
+      <h3 style="font-size:1.15rem; font-weight:700;">مال ئۇچۇرىنى تۈزىتىش</h3>
+      <input type="hidden" id="editId">
+      
+      <div class="form-group">
+        <label>مەھسۇلات نامى:</label>
+        <input type="text" id="editName" required>
+      </div>
+      <div class="form-group">
+        <label>سانى:</label>
+        <input type="number" id="editQty" min="1" required>
+      </div>
+      <div class="form-group">
+        <label>بىر دانىسىنىڭ باھاسى ($):</label>
+        <input type="number" step="0.01" id="editPrice" required>
+      </div>
+      <div class="form-group">
+        <label>سۈپەت ئەھۋالى:</label>
+        <select id="editQuality">
+          <option value="يېڭى">يېڭى</option>
+          <option value="ياخشى">ياخشى</option>
+          <option value="نۇقسانلىق">نۇقسانلىق</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ئورنى / تەكچە:</label>
+        <input type="text" id="editLocation">
+      </div>
+      <div class="form-group">
+        <label>ئىزاھات (ئەسكەرتىش):</label>
+        <input type="text" id="editNotes">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn-main" style="margin-top:0;" onclick="saveEdit()">تۈزىتىشنى ساقلاش</button>
+        <button class="btn-tool" style="flex:1;" onclick="closeEditModal()">بىكار قىلىش</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- سىپتا ئۇقتۇرۇش (Toast) -->
+  <div class="toast-container" id="toastBox">ئۇقتۇرۇش كۆزنىكى</div>
+
+  <script>
+    /* ========================================================
+       1. IndexedDB سانلىق مەلۇمات ئامبىرى قىسمى
+       ======================================================== */
+    const DB_NAME = 'WarehouseManagementDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'inventory_store';
+    let dbInstance = null;
+
+    function openWarehouseDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            store.createIndex('name', 'name', { unique: false });
+            store.createIndex('quality', 'quality', { unique: false });
+          }
+        };
+
+        req.onsuccess = (e) => {
+          dbInstance = e.target.result;
+          document.getElementById('dbStatusText').innerText = 'ئامبار: ئۇلاندى (IndexedDB)';
+          resolve(dbInstance);
+        };
+
+        req.onerror = (e) => {
+          document.getElementById('dbStatusText').innerText = 'ئامبارغا ئۇلىنالمىدى';
+          reject(e);
+        };
+      });
+    }
+
+    function dbAddItem(item) {
+      return new Promise((resolve, reject) => {
+        const tx = dbInstance.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.add(item);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbGetAllItems() {
+      return new Promise((resolve, reject) => {
+        const tx = dbInstance.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbUpdateItem(item) {
+      return new Promise((resolve, reject) => {
+        const tx = dbInstance.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.put(item);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbDeleteItem(id) {
+      return new Promise((resolve, reject) => {
+        const tx = dbInstance.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbClearAll() {
+      return new Promise((resolve, reject) => {
+        const tx = dbInstance.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.clear();
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    /* ========================================================
+       2. دەل ۋاقتىدا باھا ھېسابلاش ۋە كۆرۈنمە يۈز لوگىكىسى
+       ======================================================== */
+    const qtyInput = document.getElementById('qty');
+    const priceInput = document.getElementById('price');
+    const totalBox = document.getElementById('totalAuto');
+    let cachedItems = [];
+
+    function calculateRealtime() {
+      const q = parseFloat(qtyInput.value) || 0;
+      const p = parseFloat(priceInput.value) || 0;
+      const tot = q * p;
+      totalBox.value = tot.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+    }
+    qtyInput.addEventListener('input', calculateRealtime);
+    priceInput.addEventListener('input', calculateRealtime);
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      box.innerText = msg;
+      box.classList.add('toast-show');
+      setTimeout(() => box.classList.remove('toast-show'), 2500);
+    }
+
+    // يېڭى مالنى قوشۇش
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = parseFloat(qtyInput.value);
+      const p = parseFloat(priceInput.value);
+
+      const newItem = {
+        name: document.getElementById('name').value.trim(),
+        qty: q,
+        price: p,
+        total: q * p,
+        quality: document.getElementById('quality').value,
+        location: document.getElementById('location').value.trim() || 'كۆرسىتىلمىگەن',
+        notes: document.getElementById('notes').value.trim() || '—',
+        date: new Date().toLocaleDateString()
+      };
+
+      await dbAddItem(newItem);
+      showToast('مەھسۇلات ئامبارغا ساقلاندى');
+      document.getElementById('addForm').reset();
+      totalBox.value = '0.00 $';
+      document.getElementById('name').focus();
+      await refreshData();
+    });
+
+    async function refreshData() {
+      cachedItems = await dbGetAllItems();
+      applyFilter();
+    }
+
+    // ئىزدەش ۋە سۈزۈش (ئىزاھاتنىمۇ ئۆز ئىچىگە ئالىدۇ)
+    document.getElementById('searchInput').addEventListener('input', applyFilter);
+    document.getElementById('filterQuality').addEventListener('change', applyFilter);
+
+    function applyFilter() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const qual = document.getElementById('filterQuality').value;
+
+      const filtered = cachedItems.filter(item => {
+        const matchSearch = item.name.toLowerCase().includes(search) || 
+                            item.location.toLowerCase().includes(search) ||
+                            (item.notes && item.notes.toLowerCase().includes(search));
+        const matchQual = !qual || item.quality === qual;
+        return matchSearch && matchQual;
+      });
+
+      renderTable(filtered);
+      updateStats(cachedItems);
+    }
+
+    function renderTable(items) {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:32px;">ھېچقانداق مال مەلۇماتى تېپىلمىدى.</td></tr>`;
+        return;
+      }
+
+      items.forEach((item, idx) => {
+        let badgeClass = 'badge-new';
+        if (item.quality === 'ياخشى') badgeClass = 'badge-used';
+        if (item.quality === 'نۇقسانلىق') badgeClass = 'badge-damaged';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><strong>${item.name}</strong></td>
+          <td><span class="badge ${badgeClass}">${item.quality}</span></td>
+          <td>${item.qty}</td>
+          <td>${item.price.toFixed(2)} $</td>
+          <td style="color:var(--success); font-weight:700;">${item.total.toFixed(2)} $</td>
+          <td>${item.location}</td>
+          <td style="color:var(--text-muted); font-size:0.86rem;">${item.notes || '—'}</td>
+          <td>
+            <button class="tbl-action-btn btn-edit" onclick="openEditModal(${item.id})">تەھرىرلەش</button>
+            <button class="tbl-action-btn btn-del" onclick="deleteItemAction(${item.id})">ئۆچۈرۈش</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStats(items) {
+      const totalTypes = items.length;
+      const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
+      const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
+
+      document.getElementById('statTypes').innerText = totalTypes;
+      document.getElementById('statQty').innerText = totalQty;
+      document.getElementById('statAmount').innerText = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' $';
+    }
+
+    async function deleteItemAction(id) {
+      if (confirm('بۇ تاۋارنى راستىنلا ئۆچۈرەمسىز؟')) {
+        await dbDeleteItem(id);
+        showToast('مال تىزىملىكتىن ئۆچۈرۈلدى');
+        await refreshData();
+      }
+    }
+
+    // تەھرىرلەش
+    function openEditModal(id) {
+      const item = cachedItems.find(it => it.id === id);
+      if (!item) return;
+
+      document.getElementById('editId').value = item.id;
+      document.getElementById('editName').value = item.name;
+      document.getElementById('editQty').value = item.qty;
+      document.getElementById('editPrice').value = item.price;
+      document.getElementById('editQuality').value = item.quality;
+      document.getElementById('editLocation').value = item.location;
+      document.getElementById('editNotes').value = item.notes || '';
+
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    async function saveEdit() {
+      const id = parseInt(document.getElementById('editId').value);
+      const q = parseFloat(document.getElementById('editQty').value);
+      const p = parseFloat(document.getElementById('editPrice').value);
+
+      const updated = {
+        id,
+        name: document.getElementById('editName').value.trim(),
+        qty: q,
+        price: p,
+        total: q * p,
+        quality: document.getElementById('editQuality').value,
+        location: document.getElementById('editLocation').value.trim() || 'كۆرسىتىلمىگەن',
+        notes: document.getElementById('editNotes').value.trim() || '—',
+        date: new Date().toLocaleDateString()
+      };
+
+      await dbUpdateItem(updated);
+      closeEditModal();
+      showToast('ئۇچۇر تۈزىتىلدى');
+      await refreshData();
+    }
+
+    async function clearAllData() {
+      if (confirm('پۈتۈن ئامبار سىستېمىسىدىكى بارلىق سانلىق مەلۇماتلار نۆللىنىدۇ، جەزملەشتۈرەمسىز؟')) {
+        await dbClearAll();
+        showToast('ئامبار پاكىز تازىلاندى');
+        await refreshData();
+      }
+    }
+
+    // Excel (CSV) قىلىپ چۈشۈرۈش
+    function exportExcel() {
+      if (cachedItems.length === 0) {
+        showToast('تىزىملىكتە مال يوق!');
+        return;
+      }
+
+      let csv = '\uFEFF';
+      csv += "تەرتىپى,مەھسۇلات نامى,سۈپىتى,سانى,بىر دانىسى ($),جەمئىي سومما ($),ئورنى,ئىزاھات\n";
+
+      cachedItems.forEach((it, idx) => {
+        csv += `"${idx + 1}","${it.name}","${it.quality}","${it.qty}","${it.price}","${it.total}","${it.location}","${it.notes || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `ئامبار_دوكلاتى_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await openWarehouseDB();
+      await refreshData();
+    });
+  </script>
+</body>
+</html>
